@@ -5,6 +5,7 @@
 
 
 {% block header %}
+    <meta name="description" content="Log in op je Fitlogboek van Teora om je trainingen, voeding en metingen bij te houden.">
     <style>
         .navbar.bg-primary { background-color: #001F54 !important; }
         .navbar-toggler { border-color: #E8ECF5; }
@@ -22,6 +23,7 @@
 
 
 {% block template %}
+    <main>
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'info' %}alert-info{% elif message.tags == 'success' %}alert-success{% endif %}">
@@ -128,9 +130,9 @@
                     {% if PASSKEY_LOGIN_ENABLED or use_social_auth %}
                         <div class="col-md-4 bg-light">
                             <div class="card-body p-4">
-                                <h6 class="text-uppercase text-muted mb-3">
+                                <h3 class="h6 text-uppercase text-muted mb-3">
                                     {% translate "Faster sign in" %}
-                                </h6>
+                                </h3>
 
                                 {% if PASSKEY_LOGIN_ENABLED %}
                                     <button type="submit"
@@ -161,6 +163,7 @@
             </div>
         </div>
     </div>
+    </main>
 {% endblock %}
 
 
