@@ -1,0 +1,171 @@
+{% extends "template.html" %}
+{% load i18n wger_extras %}
+
+{% block title %}{% translate "Login" %}{% endblock %}
+
+
+{% block header %}
+    <style>
+        .navbar.bg-primary { background-color: #001F54 !important; }
+        .navbar-toggler { border-color: #E8ECF5; }
+        .navbar-toggler-icon { filter: invert(1); }
+        .teora-kop { background: #001F54; color: #fff; text-align: center; padding: 2rem 1.5rem; }
+        .teora-kop .teora-logo { display: inline-block; width: 84px; margin-bottom: .75rem; }
+        .teora-kop h1 { color: #fff; font-size: 1.75rem; margin: 0 0 .5rem; }
+        .teora-kop p { color: #E8ECF5; margin: 0; }
+        .teora-knop.btn { background: #C6FF00; border-color: #C6FF00; color: #001F54; font-weight: 700; min-height: 48px; }
+        .teora-knop.btn:hover, .teora-knop.btn:focus { background: #001F54; border-color: #001F54; color: #fff; }
+        .teora-aanvraag { background: #F4F6FA; border-radius: .5rem; margin-top: 1.5rem; padding: 1rem; text-align: center; }
+        .teora-aanvraag a { color: #0057FF; font-weight: 600; }
+    </style>
+{% endblock %}
+
+
+{% block template %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'info' %}alert-info{% elif message.tags == 'success' %}alert-success{% endif %}">
+                <a href="#" class="close extra-bold" data-bs-dismiss="alert">&times;</a>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card my-4 overflow-hidden">
+                <div class="teora-kop">
+                    <span class="teora-logo">{% include "teora-logo.svg" %}</span>
+                    <h1>Fitlogboek</h1>
+                    <p>Log in om je trainingen, voeding en metingen bij te houden.</p>
+                </div>
+                <div class="row g-0">
+
+                    {# Credentials login #}
+                    <div class="{% if PASSKEY_LOGIN_ENABLED or use_social_auth %}col-md-8{% else %}col-md-12{% endif %}">
+                        <div class="card-body p-4">
+                            <h2 class="mb-1">{% translate "Login" %}</h2>
+
+                            <form method="post" class="wger-form" novalidate>
+                                {% csrf_token %}
+                                {% if redirect_field_value %}
+                                    <input type="hidden"
+                                           name="{{ redirect_field_name }}"
+                                           value="{{ redirect_field_value }}">
+                                {% endif %}
+
+                                {% for error in form.non_field_errors %}
+                                    <div class="alert alert-danger">{{ error }}</div>
+                                {% endfor %}
+
+                                <div class="mb-3">
+                                    <label for="{{ form.login.id_for_label }}" class="form-label">
+                                        {{ form.login.label }}
+                                    </label>
+                                    {{ form.login }}
+                                    {% for error in form.login.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="{{ form.password.id_for_label }}" class="form-label">
+                                        {{ form.password.label }}
+                                    </label>
+                                    {{ form.password }}
+                                    {% for error in form.password.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    {% if form.remember %}
+                                        <div class="form-check mb-0">
+                                            {{ form.remember }}
+                                            <label for="{{ form.remember.id_for_label }}"
+                                                   class="form-check-label">
+                                                {{ form.remember.label }}
+                                            </label>
+                                        </div>
+                                    {% else %}
+                                        <span></span>
+                                    {% endif %}
+                                    <a href="{% url 'core:user:password_reset' %}">
+                                        {% translate "Forgot password?" %}
+                                    </a>
+                                </div>
+
+                                <button type="submit" class="btn teora-knop w-100">
+                                    {% translate "Login" %}
+                                </button>
+                            </form>
+
+                            <div class="teora-aanvraag">
+                                <p class="mb-1">
+                                    Nog geen account?
+                                    <a href="https://f9537572.sibforms.com/serve/MUIFAMiRjVZW85s3dTr5ngtU8aJqbeASjmOglhOy0_R29ssnKhtybSd8_G8dDrI2EHL62HGx0jjbfyuMATliC8E-GP842ZJ49fpIKkB4Cl0Vuv1U794SaDIk8986blDYFSYe20dgBONqWa2l-ONvwfu1BKJeSDal5fs1n9TyFr9Cngc9s4fYnJqy_CYhmtDsDxbJAuYSSLL_DJXT">Vraag je gratis Fitlogboek aan</a>
+                                </p>
+                                <p class="mb-0">
+                                    Vragen? <a href="{% include "teora-contact-url.txt" %}">Neem contact op</a>
+                                </p>
+                            </div>
+
+                            {% if allow_registration %}
+                                <div class="d-flex align-items-center text-muted mt-5 mb-3">
+                                    <hr class="flex-grow-1 my-0">
+                                    <span class="px-3">{% translate "No account?" %}</span>
+                                    <hr class="flex-grow-1 my-0">
+                                </div>
+                                <a href="{% url 'core:user:registration' %}"
+                                   class="btn btn-outline-primary w-100">
+                                    {% translate "Register" %}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# Quick sign-in: only rendered when at least one method is available #}
+                    {% if PASSKEY_LOGIN_ENABLED or use_social_auth %}
+                        <div class="col-md-4 bg-light">
+                            <div class="card-body p-4">
+                                <h6 class="text-uppercase text-muted mb-3">
+                                    {% translate "Faster sign in" %}
+                                </h6>
+
+                                {% if PASSKEY_LOGIN_ENABLED %}
+                                    <button type="submit"
+                                            form="mfa_login"
+                                            id="passkey_login"
+                                            class="btn btn-outline-primary w-100 mb-2">
+                                        <span class="{% fa_class 'key' %} me-1"></span>
+                                        {% translate "Sign in with a passkey" %}
+                                    </button>
+                                {% endif %}
+
+                                {% if PASSKEY_LOGIN_ENABLED and use_social_auth %}
+                                    <div class="d-flex align-items-center text-muted small my-3">
+                                        <hr class="flex-grow-1 my-0">
+                                        <span class="px-2">{% translate "or sign in with" %}</span>
+                                        <hr class="flex-grow-1 my-0">
+                                    </div>
+                                {% endif %}
+
+                                {% if use_social_auth %}
+                                    {% include "user/social_login.html" %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extra_body %}
+    {% if PASSKEY_LOGIN_ENABLED %}
+        {% include "mfa/webauthn/snippets/login_script.html" %}
+    {% endif %}
+{% endblock %}

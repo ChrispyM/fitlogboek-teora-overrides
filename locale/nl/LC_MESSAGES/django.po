@@ -1,0 +1,10 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nl\n"
+
+msgid "Imprint"
+msgstr "Colofon"
+
+msgid "Faster sign in"
+msgstr "Sneller inloggen"
